@@ -1,53 +1,300 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Star Rating Form | CodingNepal</title>
-    <link rel="stylesheet" href="/static/css/Feedback.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-  </head>
-  <body>
-    <div class="container">
-      <div class="post">
-        <div class="text">Thanks for rating us!</div>
-        <div class="edit">EDIT</div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback | Fit-Init</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+  <link rel="stylesheet" href="/static/css/enhancements.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .feedback-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .feedback-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), #a855f7, var(--accent));
+    }
+
+    /* Star Rating */
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      gap: 8px;
+      margin: 24px 0;
+    }
+
+    .star-rating input {
+      display: none;
+    }
+
+    .star-rating label {
+      font-size: 40px;
+      color: rgba(255,255,255,0.15);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      filter: drop-shadow(0 0 0px transparent);
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+      color: var(--accent);
+      filter: drop-shadow(0 0 8px rgba(245,158,11,0.5));
+      transform: scale(1.15);
+    }
+
+    /* Textarea */
+    .feedback-textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 120px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .feedback-textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .feedback-textarea:focus {
+      border-color: var(--border-accent);
+      background: rgba(124, 58, 237, 0.06);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+      margin-top: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(124, 58, 237, 0.6);
+    }
+
+    /* Success State */
+    .success-state {
+      display: none;
+      text-align: center;
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    .success-icon {
+      width: 80px; height: 80px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid rgba(16, 185, 129, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .rating-display {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .selected-stars {
+      color: var(--accent);
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+
+    /* Label style */
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    /* Category pills */
+    .category-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .category-pill {
+      padding: 6px 14px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      background: transparent;
+      color: var(--text-secondary);
+    }
+
+    .category-pill:hover,
+    .category-pill.active {
+      border-color: var(--border-accent);
+      background: rgba(124,58,237,0.12);
+      color: var(--primary-light);
+    }
+  </style>
+</head>
+<body>
+  <div class="animated-bg"></div>
+
+  <div class="feedback-card">
+    <!-- Form State -->
+    <div id="form-state">
+      <div style="text-align:center; margin-bottom:8px;">
+        <span class="section-pill">💬 Share Your Experience</span>
       </div>
-      <div class="star-widget">
-        <input type="radio" name="rate" id="rate-5">
-        <label for="rate-5" class="fas fa-star"></label>
-        <input type="radio" name="rate" id="rate-4">
-        <label for="rate-4" class="fas fa-star"></label>
-        <input type="radio" name="rate" id="rate-3">
-        <label for="rate-3" class="fas fa-star"></label>
-        <input type="radio" name="rate" id="rate-2">
-        <label for="rate-2" class="fas fa-star"></label>
-        <input type="radio" name="rate" id="rate-1">
-        <label for="rate-1" class="fas fa-star"></label>
-        <form action="#">
-          <header></header>
-          <div class="textarea">
-            <textarea cols="30" placeholder="Describe your experience.."></textarea>
-          </div>
-          <div class="btn">
-            <button type="submit">Post</button>
-          </div>
-        </form>
+      <h1 class="section-title" style="text-align:center; font-size:28px; margin-bottom:4px;">Rate Fit-Init</h1>
+      <p style="text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:24px;">
+        Your feedback helps us improve the AI trainer for everyone.
+      </p>
+
+      <!-- Star Rating -->
+      <label class="form-label" style="text-align:center; display:block;">How was your experience?</label>
+      <div class="star-rating">
+        <input type="radio" id="star5" name="rate" value="5">
+        <label for="star5" class="fas fa-star"></label>
+        <input type="radio" id="star4" name="rate" value="4">
+        <label for="star4" class="fas fa-star"></label>
+        <input type="radio" id="star3" name="rate" value="3">
+        <label for="star3" class="fas fa-star"></label>
+        <input type="radio" id="star2" name="rate" value="2">
+        <label for="star2" class="fas fa-star"></label>
+        <input type="radio" id="star1" name="rate" value="1">
+        <label for="star1" class="fas fa-star"></label>
+      </div>
+
+      <!-- Category Pills -->
+      <label class="form-label">What are you rating?</label>
+      <div class="category-pills">
+        <button class="category-pill active" onclick="togglePill(this)">Pose Detection</button>
+        <button class="category-pill" onclick="togglePill(this)">Accuracy</button>
+        <button class="category-pill" onclick="togglePill(this)">UI Design</button>
+        <button class="category-pill" onclick="togglePill(this)">Yoga Trainer</button>
+        <button class="category-pill" onclick="togglePill(this)">Self Defence</button>
+      </div>
+
+      <!-- Written Feedback -->
+      <label class="form-label">Tell us more</label>
+      <textarea id="feedback-text" class="feedback-textarea" placeholder="Describe your experience, what you liked or what could be improved..."></textarea>
+
+      <button class="submit-btn" onclick="submitFeedback()">
+        <i class="fas fa-paper-plane" style="margin-right:8px;"></i> Submit Feedback
+      </button>
+
+      <div style="text-align:center; margin-top:16px;">
+        <a href="/" style="color:var(--text-muted); font-size:13px; text-decoration:none;">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
       </div>
     </div>
-    <script>
-      const btn = document.querySelector("button");
-      const post = document.querySelector(".post");
-      const widget = document.querySelector(".star-widget");
-      const editBtn = document.querySelector(".edit");
-      btn.onclick = ()=>{
-        widget.style.display = "none";
-        post.style.display = "block";
-        editBtn.onclick = ()=>{
-          widget.style.display = "block";
-          post.style.display = "none";
-        }
-        return false;
+
+    <!-- Success State -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon">🎉</div>
+      <h2 class="section-title" style="font-size:26px; margin-bottom:12px;">Thank You!</h2>
+      <p style="color:var(--text-secondary); font-size:15px; line-height:1.7; margin-bottom:20px;">
+        Your feedback has been submitted. We'll use it to make Fit-Init better for you and thousands of other users.
+      </p>
+      <div class="rating-display">
+        You rated: <span class="selected-stars" id="displayed-stars">⭐⭐⭐⭐⭐</span>
+      </div>
+      <a href="/" class="btn-primary-gradient" style="display:inline-flex;">
+        <i class="fas fa-home"></i> Back to Home
+      </a>
+      <br><br>
+      <button onclick="editFeedback()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:13px; font-family:inherit; text-decoration:underline;">
+        Edit my feedback
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function togglePill(el) {
+      el.classList.toggle('active');
+    }
+
+    function submitFeedback() {
+      const ratingEl = document.querySelector('input[name="rate"]:checked');
+      const rating = ratingEl ? parseInt(ratingEl.value) : 0;
+
+      if (rating === 0) {
+        alert('Please select a star rating first!');
+        return;
       }
-    </script>
-  </body>
+
+      const stars = '⭐'.repeat(rating);
+      document.getElementById('displayed-stars').textContent = stars;
+      document.getElementById('form-state').style.display = 'none';
+      const successEl = document.getElementById('success-state');
+      successEl.style.display = 'block';
+    }
+
+    function editFeedback() {
+      document.getElementById('success-state').style.display = 'none';
+      document.getElementById('form-state').style.display = 'block';
+    }
+  </script>
+</body>
 </html>

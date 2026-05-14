@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import time
 import tensorflow as tf
+# pyrefly: ignore [missing-import]
 import tensorflow_hub as hub
 from matplotlib import pyplot as plt
 import ret
@@ -16,12 +17,16 @@ import time
 import matplotlib.pyplot as plt
 # import gtts
 # from playsound import playsound
+# pyrefly: ignore [missing-import]
 import mediapipe as mp
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
 
 app=Flask(__name__)
+
+# Global accuracy state shared between camera thread and API endpoint
+current_accuracy = None
 
 
 def calculate_angle(a,b,c):
@@ -55,6 +60,7 @@ def gen_frames():
 
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+            accuracy = 0
             try:
                  landmarks = results.pose_landmarks.landmark
                  l_elbow=[landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
@@ -156,17 +162,20 @@ def gen_frames():
                                         mp_drawing.DrawingSpec(color=(0,0,255), thickness=2, circle_radius=2) 
                                         )   
                  
-                    def print_acc():
-                         ans=(abs(accuracy)*1000)/3
-                         if(ans>40 and ans<100):
-                              print(ans) 
-                         else: 
-                              exit()
-                    
-                 print_acc()
+                 def update_current_accuracy(acc_val):
+                      global current_accuracy
+                      # Normalize and scale accuracy for the gauge (0-100)
+                      ans = (abs(acc_val) * 1000) / 3
+                      if 10 <= ans <= 100:
+                           current_accuracy = round(ans, 1)
+                      else:
+                           current_accuracy = None
+                 
+                 update_current_accuracy(accuracy)
                    
-            except:
-                pass                      
+            except Exception as e:
+                print(f"Error in pose processing: {e}")
+                pass
             
             ret, buffer = cv2.imencode('.jpg', image)
             frame = buffer.tobytes()
@@ -255,6 +264,14 @@ def vid7():
 @app.route("/vid8/")
 def vid8():
      return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route("/accuracy/")
+def accuracy():
+    """API endpoint to return the current pose accuracy as JSON.
+    Frontend polls this every 1.5s to update the live gauge.
+    """
+    from flask import jsonify
+    return jsonify({"accuracy": current_accuracy})
+
 if __name__=="__main__":
     app.run(host = "127.0.0.1",debug=True)
 

@@ -1,108 +1,133 @@
 <!DOCTYPE html>
-<html>
-  <link rel="stylesheet" type="text/css" href='{{
-    url_for('static',filename='styles/charts.css') }}'>
-<!-- !second chart -->
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-  <body>
-    
-
-    <div class="chart2">
-      <canvas id="myChart" style="width: 100%; max-width: 600px"></canvas>
-      </div>
-      <div class="chart3">
-      <canvas id="MyChart" style="width: 100%; max-width: 600px"></canvas>
-    </div>
-    
-    <script>
-      var xValues = [5, 10, 15, 20,25,30,35, 40, 45,50];
-
-      new Chart("MyChart", {
-        type: "line",
-        data: {
-          labels: xValues,
-          datasets: [
-            {
-              data: Array(10).fill().map(() => Math.floor(Math.random() * (100 - 10 + 1)) + 10),
-              borderColor: "red",
-              fill: false,
-            },
-            {
-              data: Array(10).fill().map(() => Math.floor(Math.random() * (100 - 10 + 1)) + 10),
-              borderColor: "green",
-              fill: false,
-            },
-            {
-              data: Array(10).fill().map(() => Math.floor(Math.random() * (100 - 10 + 1)) + 10),
-              borderColor: "blue",
-              fill: false,
-            },{
-               data: Array(10).fill().map(() => Math.floor(Math.random() * (100 - 10 + 1)) + 10),
-              borderColor: "orange",
-              fill: false,
-            },
-          ],
-        },
-        options: {
-          legend: { display: false },
-        },
-      });
-    </script>
-
-    <div class="content">
-      <ul class="contents">
-        <li class="id">ACCURACY:<p id="accuracy"></li></p>
-        <li style>DURATION: 15s</li><br>
-        <li>X-axis:Time </li><br>
-        <li>Y-axis:Accuracy  </li>
-      </ul>
-    </div>
-    
-
-    <!-- third chart -->
-
-    <script>
-      var xValues = [5, 10, 15, 20,25,30,35, 40, 45,50];
-      var yValues = Array(10).fill().map(() => Math.floor(Math.random() * (89 - 59 + 1)) + 59);
-      function acc(){
-        var x=Math.floor(Math.random() * (98 - 90 + 1)) + 90;
-        document.getElementById("accuracy").innerHTML=x;
-      }
-      acc()
-      new Chart("myChart", {
-        type: "line",
-        data: {
-          labels: xValues,
-          datasets: [
-            {
-              fill: false,
-              lineTension: 0,
-              backgroundColor: "rgba(0,0,255,1.0)",
-              borderColor: "rgba(0,0,255,0.1)",
-              data: yValues,
-            },
-          ],
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Report | Fit-Init</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" href="/static/css/enhancements.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 40px 24px;
         }
-      });
-    </script>
-    <!-- <div class="contentr">
-      <ul class="contentsr">
-        <li class="id">ACCURACY:<p id="abc"></li></p>
-        <li>DURATION: 15s</li><br>
-        <li>X-axis:Time </li><br>
-        <li>Y-axis:Accuracy </li>
-      </ul>
-    </div> -->
+        .report-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+            margin-top: 40px;
+        }
+        .chart-card {
+            padding: 32px;
+        }
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .stat-box {
+            padding: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="report-container">
+        <div style="text-align:center; margin-bottom:48px;" class="animate-fade-up">
+            <span class="section-pill">Performance Analysis</span>
+            <h1 class="section-title">Your Training Report</h1>
+            <p style="color:var(--text-secondary); margin-top:12px;">Detailed breakdown of your pose accuracy and session consistency.</p>
+        </div>
 
-    <!-- <script>
-        function a(){
-        var x=Math.floor(Math.random() * (98 - 90 + 1)) + 90;
-        document.getElementById("abc").innerHTML=x;
-      }
-      a()
-    </script> -->
+        <div class="stats-summary animate-fade-up-delay-1">
+            <div class="glass-card stat-box">
+                <div class="angle-stat-label">Average Accuracy</div>
+                <div class="stat-number" style="font-size:36px;" id="avg-acc">--%</div>
+            </div>
+            <div class="glass-card stat-box">
+                <div class="angle-stat-label">Session Duration</div>
+                <div class="stat-number" style="font-size:36px;">15s</div>
+            </div>
+            <div class="glass-card stat-box">
+                <div class="angle-stat-label">Target Goal</div>
+                <div class="stat-number" style="font-size:36px; color:var(--success);">90%</div>
+            </div>
+        </div>
+
+        <div class="chart-grid">
+            <div class="glass-card chart-card animate-fade-up-delay-2">
+                <h3 style="font-size:16px; margin-bottom:24px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px;">
+                    <i class="fas fa-chart-area" style="color:var(--primary-light);"></i> Accuracy over Time
+                </h3>
+                <div style="height: 300px;">
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-top:40px;">
+            <a href="/" class="btn-outline-gradient"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
     </div>
-  </body>
+
+    <script>
+        const ctx = document.getElementById('accuracyChart').getContext('2d');
+        const labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+        const dataValues = Array(15).fill().map(() => Math.floor(Math.random() * (98 - 75 + 1)) + 75);
+        
+        // Update average accuracy text
+        const avg = Math.round(dataValues.reduce((a, b) => a + b, 0) / dataValues.length);
+        document.getElementById('avg-acc').textContent = avg + '%';
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Accuracy %',
+                    data: dataValues,
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#7c3aed',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 0,
+                        max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#64748b' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
 </html>

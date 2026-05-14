@@ -1,0 +1,27 @@
+# Requirements updated for Python 3.12 compatibility
+# Original project used: tensorflow==2.10, mediapipe==0.8.11, grpcio==1.50.0
+# These are the minimum supported versions for Python 3.12
+
+# Web Framework
+Flask==3.0.3
+Werkzeug==3.0.3
+Jinja2==3.1.4
+itsdangerous==2.2.0
+click==8.1.7
+
+# Computer Vision & Pose Detection
+opencv-python==4.10.0.84
+mediapipe==0.10.14
+
+# ML / TensorFlow (Python 3.12 requires 2.16+)
+tensorflow==2.17.0
+tensorflow-hub==0.16.1
+
+# Numerical / Plotting
+numpy==1.26.4
+matplotlib==3.9.2
+
+# Utilities
+requests==2.32.3
+ret==0.1.4
+certifi==2024.8.30
